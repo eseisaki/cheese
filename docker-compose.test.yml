@@ -1,0 +1,130 @@
+version: '3'
+services:
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.test
+    volumes:
+      - './web:/app'
+      - '/app/node_modules'
+    environment:
+      - REACT_APP_AUTH=http://127.0.0.1:4000
+      - REACT_APP_APP=http://127.0.0.1:4000
+      - CI=true
+  application:
+    container_name: app_test
+    build:
+      context: ./application
+      dockerfile: Dockerfile.test
+    volumes:
+      - './application:/app'
+    environment:
+      - ZK_HOST=zookeeper
+      - FLASK_ENV=development
+      - MONGODB_HOST=mongodb
+      - STORAGE_HOST_0=storage_server_0
+      - STORAGE_HOST_1=storage_server_1
+      - STORAGE_HOST_2=storage_server_2
+      - STORAGE_HOST_3=storage_server_3
+      - APP_CONFIG_FILE=config/testing.cfg
+    depends_on:
+      - zookeeper
+      - mongodb
+  authentication:
+    container_name: auth_test
+    build:
+      context: ./authentication
+      dockerfile: Dockerfile.test
+    command: 'python -m pytest -v -p no:cacheprovider -p no:warnings --color=yes'
+    volumes:
+      - './authentication:/app'
+    environment:
+      - ZK_HOST=zookeeper
+      - FLASK_ENV=development
+      - MONGODB_HOST=mongodb
+      - APP_CONFIG_FILE=config/testing.cfg
+    depends_on: 
+      - zookeeper
+      - mongodb
+  storage_server_0:
+    container_name: storage_test_0
+    build:
+      context: ./storage
+      dockerfile: Dockerfile.test
+    volumes:
+      - './storage:/app'
+    environment:
+      - ZK_HOST=zookeeper
+      - FLASK_ENV=development
+      - STORAGE_ID=0
+      - APP_CONFIG_FILE=config/testing.cfg
+    depends_on:
+      - zookeeper
+  storage_server_1:
+    container_name: storage_test_1
+    build:
+      context: ./storage
+      dockerfile: Dockerfile.test
+    command: 'python -m pytest -v -s -p no:cacheprovider -p no:warnings --color=yes'
+    volumes:
+      - './storage:/app'
+    environment:
+      - ZK_HOST=zookeeper
+      - FLASK_ENV=development
+      - STORAGE_ID=1
+      - APP_CONFIG_FILE=config/testing.cfg
+    depends_on:
+      - zookeeper
+  storage_server_2:
+    container_name: storage_test_2
+    build:
+      context: ./storage
+      dockerfile: Dockerfile.test
+    command: 'python -m pytest -v -s -p no:cacheprovider -p no:warnings --color=yes'
+    volumes:
+      - './storage:/app'
+    environment:
+      - ZK_HOST=zookeeper
+      - FLASK_ENV=development
+      - STORAGE_ID=2
+      - APP_CONFIG_FILE=config/testing.cfg
+    depends_on:
+      - zookeeper
+  storage_server_3:
+    container_name: storage_test_3
+    build:
+      context: ./storage
+      dockerfile: Dockerfile.test
+    command: 'python -m pytest -v -s -p no:cacheprovider -p no:warnings --color=yes'
+    volumes:
+      - './storage:/app'
+    environment:
+      - ZK_HOST=zookeeper
+      - FLASK_ENV=development
+      - STORAGE_ID=3
+      - APP_CONFIG_FILE=config/testing.cfg
+    depends_on:
+      - zookeeper
+  mongodb:
+    image: 'mongo:latest'
+    environment:
+      - MONGO_DATA_DIR=/test-data/db
+    volumes:
+      - ./test-data/db:/test-data/db
+    command: mongod --smallfiles --quiet
+    logging:
+      driver: none
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    ports:
+      - '2181'
+      - '2888'
+      - '3888'
+    volumes:
+      - 'zookeeper_data:/bitnami'
+    environment:
+      - ZOO_SERVER_ID=1
+      - ALLOW_ANONYMOUS_LOGIN=yes
+volumes:
+  zookeeper_data:
+    driver: local

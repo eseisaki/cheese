@@ -1,0 +1,9 @@
+storage/server/__pycache__/
+storage/.pytest_cache/
+storage/tests/__pycache__
+application/.pytest_cache/
+application/app_logic/__pycache__/
+application/tests/__pycache__/
+authentication/.pytest_cache/
+authentication/auth/__pycache__/
+authentication/tests/__pycache__/

@@ -1,0 +1,43 @@
+{
+  "public_profile": {
+    "username": "eseisaki",
+    "email": "eseisaki@gmail.com",
+    "is_strange:": "false",
+    "my_profile": "eseisaki",
+    "followers": [],
+    "following": [],
+    "followers_num": 0,
+    "following_num": 0,
+    "reg_date": "12/12/19",
+    "profile_image": " https://www.veon.ie/wp-content/uploads/2016/06/hans.jpg"
+  },
+  "get_galleries": {
+    "galleries": [
+      "Fish",
+      "Dogs",
+      "Cats"
+    ],
+    "myprofile": {
+      "username": "eseisaki",
+      "password": "1234"
+    }
+  },
+  "gallery_photos": {},
+  "get_comments": {},
+  "restore_password": {},
+  "profile_picture": {},
+  "follow": {},
+  "add_gallery": {},
+  "comment": {},
+  "add_image": {},
+  "delete_image": {},
+  "delete_gallery": {},
+  "delete_comment": {},
+  "delete_follower": {},
+  "login": {
+    "username": "eseisaki",
+    "password": "1234"
+  },
+  "logout": {},
+  "register": {}
+}

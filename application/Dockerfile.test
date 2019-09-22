@@ -1,0 +1,5 @@
+FROM python:3.6
+WORKDIR /app
+COPY requirements.test.txt ./
+RUN pip install --no-cache -r requirements.test.txt
+COPY . /app

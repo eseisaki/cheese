@@ -1,0 +1,151 @@
+version: '3'
+services:
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.test
+    volumes:
+      - './web:/app'
+      - '/app/node_modules'
+    environment:
+      - REACT_APP_AUTH=http://localhost:4000
+      - REACT_APP_APP=http://localhost:5000
+      - NODE_ENV=development
+    ports:
+      - 3000:3000
+    depends_on:
+      - application
+      - authentication
+  application:
+    build:
+      context: ./application
+      dockerfile: Dockerfile
+    volumes:
+      - './application:/app'
+    ports:
+      - 5000:5000
+    environment:
+      - WAIT_HOSTS=zookeeper:2181
+      - FLASK_APP=app_logic
+      - FLASK_ENV=development
+      - ZK_HOST=zookeeper
+      - MONGODB_HOST=mongodb
+      - STORAGE_HOST_0=storage_server_0
+      - STORAGE_HOST_1=storage_server_1
+      - STORAGE_HOST_2=storage_server_2
+      - STORAGE_HOST_3=storage_server_3
+      - APP_CONFIG_FILE=config/development.cfg
+    depends_on:
+      - zookeeper 
+      - mongodb
+  authentication:
+    build:
+      context: ./authentication
+      dockerfile: Dockerfile
+    volumes:
+      - './authentication:/app'
+    ports:
+      - 4000:4000
+    environment:
+      - WAIT_HOSTS=zookeeper:2181
+      - FLASK_APP=auth
+      - ZK_HOST=zookeeper
+      - FLASK_ENV=development
+      - MONGODB_HOST=mongodb
+      - APP_CONFIG_FILE=config/development.cfg
+    depends_on:
+      - zookeeper 
+      - mongodb        
+  storage_server_0:
+    build:
+      context: ./storage
+      dockerfile: Dockerfile
+    volumes:
+      - './storage:/app'
+    environment:
+      - WAIT_HOSTS=zookeeper:2181
+      - FLASK_ENV=development
+      - FLASK_APP=server
+      - ZK_HOST=zookeeper
+      - STORAGE_ID=0
+      - APP_CONFIG_FILE=config/development.cfg
+    ports:
+      - 1000:1000
+    depends_on:
+      - zookeeper
+  storage_server_1:
+    build:
+      context: ./storage
+      dockerfile: Dockerfile
+    volumes:
+      - './storage:/app'
+    environment:
+      - WAIT_HOSTS=zookeeper:2181
+      - FLASK_ENV=development
+      - FLASK_APP=server
+      - ZK_HOST=zookeeper
+      - STORAGE_ID=1
+      - APP_CONFIG_FILE=config/development.cfg
+    ports:
+      - 1001:1001
+    depends_on:
+      - zookeeper
+  storage_server_2:
+    build:
+      context: ./storage
+      dockerfile: Dockerfile
+    volumes:
+      - './storage:/app'
+    environment:
+      - WAIT_HOSTS=zookeeper:2181
+      - FLASK_ENV=development
+      - FLASK_APP=server
+      - ZK_HOST=zookeeper
+      - STORAGE_ID=2
+      - APP_CONFIG_FILE=config/development.cfg
+    ports:
+      - 1002:1002
+    depends_on:
+      - zookeeper
+  storage_server_3:
+    build:
+      context: ./storage
+      dockerfile: Dockerfile
+    volumes:
+      - './storage:/app'
+    environment:
+      - WAIT_HOSTS=zookeeper:2181
+      - FLASK_ENV=development
+      - FLASK_APP=server
+      - ZK_HOST=zookeeper
+      - STORAGE_ID=3
+      - APP_CONFIG_FILE=config/development.cfg
+    ports:
+      - 1003:1003
+    depends_on:
+      - zookeeper
+  mongodb:
+    image: 'mongo:latest'
+    environment:
+      - MONGO_DATA_DIR=/run-data/db
+    volumes:
+      - ./run_data/db:/run-data/db
+    command: mongod --smallfiles #--quiet
+    logging:
+      driver: none
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    ports:
+      - '2181'
+      - '2888'
+      - '3888'
+    volumes:
+      - 'zookeeper_Data:/bitnami'
+    environment:
+      - ZOO_SERVER_ID=1
+      - ALLOW_ANONYMOUS_LOGIN=yes
+    logging:
+      driver: none
+volumes:
+  zookeeper_Data:
+    driver: local
